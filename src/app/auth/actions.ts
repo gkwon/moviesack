@@ -1,0 +1,34 @@
+'use server'
+
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+
+export async function login(_prev: { error: string } | null, formData: FormData) {
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (error) return { error: error.message }
+
+  redirect('/watchlist')
+}
+
+export async function signup(_prev: { error: string } | null, formData: FormData) {
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+
+  const supabase = await createClient()
+  const { error } = await supabase.auth.signUp({ email, password })
+
+  if (error) return { error: error.message }
+
+  redirect('/auth/check-email')
+}
+
+export async function signout() {
+  const supabase = await createClient()
+  await supabase.auth.signOut()
+  redirect('/')
+}

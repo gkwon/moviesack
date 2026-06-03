@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moviesack — Build Plan</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #e4e4e7;
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 760px; margin: 0 auto; }
+    header { margin-bottom: 2.5rem; }
+    header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; }
+    header h1 span { color: #a78bfa; }
+    header p { color: #71717a; margin-top: 0.4rem; font-size: 0.95rem; }
+
+    .section { margin-bottom: 2rem; }
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #52525b;
+      margin-bottom: 0.75rem;
+    }
+
+    .card {
+      background: #141414;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .task {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid #1f1f23;
+      transition: background 0.15s;
+    }
+    .task:last-child { border-bottom: none; }
+    .task:hover { background: #1a1a1f; }
+
+    .task input[type="checkbox"] {
+      margin-top: 0.2rem;
+      accent-color: #a78bfa;
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .task-body { flex: 1; min-width: 0; }
+    .task-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #e4e4e7;
+    }
+    .task-title.done {
+      text-decoration: line-through;
+      color: #52525b;
+    }
+    .task-desc {
+      font-size: 0.8rem;
+      color: #71717a;
+      margin-top: 0.2rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+    .badge-done    { background: #16a34a22; color: #4ade80; border: 1px solid #16a34a44; }
+    .badge-next    { background: #7c3aed22; color: #a78bfa; border: 1px solid #7c3aed44; }
+    .badge-later   { background: #1e293b;   color: #94a3b8; border: 1px solid #334155; }
+    .badge-blocked { background: #92400e22; color: #fb923c; border: 1px solid #92400e44; }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+    }
+    .stack-item {
+      background: #141414;
+      border: 1px solid #27272a;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+    }
+    .stack-item .name { font-size: 0.85rem; font-weight: 600; }
+    .stack-item .detail { font-size: 0.75rem; color: #71717a; margin-top: 0.2rem; }
+
+    .env-block {
+      background: #141414;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+    }
+    .env-line { display: flex; gap: 0.5rem; }
+    .env-key   { color: #a78bfa; }
+    .env-value { color: #71717a; }
+    .env-note  { color: #4ade80; }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #1f1f23;
+      font-size: 0.75rem;
+      color: #3f3f46;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Movie<span>sack</span> — Build Plan</h1>
+    <p>moviesack.com &nbsp;·&nbsp; movie watchlist + discovery app</p>
+  </header>
+
+  <!-- Stack -->
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="name">Next.js 16.2.6</div><div class="detail">App Router · Turbopack · proxy.ts</div></div>
+      <div class="stack-item"><div class="name">shadcn/ui</div><div class="detail">@base-ui/react — no asChild prop</div></div>
+      <div class="stack-item"><div class="name">Tailwind CSS v4</div><div class="detail">Dark theme default</div></div>
+      <div class="stack-item"><div class="name">TMDB API</div><div class="detail">Movie data, images, search</div></div>
+      <div class="stack-item"><div class="name">Supabase</div><div class="detail">Auth + watchlist (PostgreSQL + RLS)</div></div>
+      <div class="stack-item"><div class="name">TypeScript</div><div class="detail">Strict mode</div></div>
+    </div>
+  </div>
+
+  <!-- Env vars -->
+  <div class="section">
+    <div class="section-title">Required .env.local Keys</div>
+    <div class="env-block">
+      <div class="env-line"><span class="env-key">TMDB_API_KEY</span><span class="env-value">=your_tmdb_api_key</span><span class="env-note">&nbsp;# get from themoviedb.org</span></div>
+      <div class="env-line"><span class="env-key">NEXT_PUBLIC_SUPABASE_URL</span><span class="env-value">=https://xxxx.supabase.co</span></div>
+      <div class="env-line"><span class="env-key">NEXT_PUBLIC_SUPABASE_ANON_KEY</span><span class="env-value">=your_anon_key</span></div>
+    </div>
+  </div>
+
+  <!-- Phase 1 — immediate -->
+  <div class="section">
+    <div class="section-title">Phase 1 — Immediate Setup</div>
+    <div class="card">
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Add TMDB API key to .env.local</div>
+          <div class="task-desc">Register at themoviedb.org → Settings → API → get v3 key</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Add Supabase URL + anon key to .env.local</div>
+          <div class="task-desc">Supabase dashboard → Project Settings → API</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Run supabase/schema.sql in Supabase SQL editor</div>
+          <div class="task-desc">Creates watchlist table with RLS policies for per-user access</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 — auth -->
+  <div class="section">
+    <div class="section-title">Phase 2 — Authentication</div>
+    <div class="card">
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Wire up login form to Supabase auth</div>
+          <div class="task-desc">Server Action in src/app/auth/actions.ts → signInWithPassword()</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Wire up signup form to Supabase auth</div>
+          <div class="task-desc">Server Action in src/app/auth/actions.ts → signUp(); redirects to /auth/check-email</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Add sign-out button to Navbar for logged-in users</div>
+          <div class="task-desc">Navbar detects live session; shows email + sign-out button via signout() action</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Auth callback route for email confirmation</div>
+          <div class="task-desc">/auth/callback/route.ts — exchanges code for session, redirects to /watchlist</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 — watchlist -->
+  <div class="section">
+    <div class="section-title">Phase 3 — Watchlist CRUD</div>
+    <div class="card">
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Add to Sack button on movie detail page</div>
+          <div class="task-desc">AddToSackButton with optimistic toggle; redirects to login if not signed in</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Render real watchlist on /watchlist for logged-in users</div>
+          <div class="task-desc">Server-side query; grouped into Watching / Want to Watch / Watched sections</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Status toggle (want → watching → watched)</div>
+          <div class="task-desc">WatchlistItem cycles status on click via updateStatus() action with useTransition</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" />
+        <div class="task-body">
+          <div class="task-title">Star rating on watched movies</div>
+          <div class="task-desc">1–10 rating input; save to watchlist.rating column</div>
+        </div>
+        <span class="badge badge-later">later</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Remove from sack</div>
+          <div class="task-desc">Trash icon on WatchlistItem; calls removeFromWatchlist() action</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 — discovery -->
+  <div class="section">
+    <div class="section-title">Phase 4 — Discovery UX</div>
+    <div class="card">
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Persist watchlist IDs client-side for Add/In Sack state on grids</div>
+          <div class="task-desc">MovieGridInteractive fetches IDs server-side, manages optimistic toggles via useTransition</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Pagination on discover &amp; search</div>
+          <div class="task-desc">Prev/Next URL-param pagination; TMDB page cap at 500; Pagination component</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Genre-filtered discover page</div>
+          <div class="task-desc">?genre=ID calls getMoviesByGenre(); active genre shown with clear link</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Similar / recommended movies on movie detail page</div>
+          <div class="task-desc">getMovieRecommendations() — "More like this" grid at bottom of /movie/[id]</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 — polish -->
+  <div class="section">
+    <div class="section-title">Phase 5 — Polish &amp; Launch</div>
+    <div class="card">
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">SEO metadata per movie detail page</div>
+          <div class="task-desc">generateMetadata() — title, description, og:image, twitter card from TMDB data</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Star rating on watched movies</div>
+          <div class="task-desc">5-star UI in WatchlistItem; hover + fill; updateRating() action; stored as 1–10 in DB</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" checked />
+        <div class="task-body">
+          <div class="task-title done">Favicon and app icons</div>
+          <div class="task-desc">src/app/icon.svg — purple film strip icon; picked up automatically by Next.js</div>
+        </div>
+        <span class="badge badge-done">done</span>
+      </div>
+      <div class="task">
+        <input type="checkbox" />
+        <div class="task-body">
+          <div class="task-title">Deploy to Vercel</div>
+          <div class="task-desc">Push to GitHub → import on Vercel → add env vars → add moviesack.com domain → update Supabase redirect URLs</div>
+        </div>
+        <span class="badge badge-next">next</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pages built -->
+  <div class="section">
+    <div class="section-title">Pages — Already Built</div>
+    <div class="card">
+      <div class="task"><input type="checkbox" checked /><div class="task-body"><div class="task-title done">/ — Home with hero + trending section</div></div><span class="badge badge-done">done</span></div>
+      <div class="task"><input type="checkbox" checked /><div class="task-body"><div class="task-title done">/discover — Browse by tab + genre filters</div></div><span class="badge badge-done">done</span></div>
+      <div class="task"><input type="checkbox" checked /><div class="task-body"><div class="task-title done">/search — Server-side movie search</div></div><span class="badge badge-done">done</span></div>
+      <div class="task"><input type="checkbox" checked /><div class="task-body"><div class="task-title done">/movie/[id] — Movie detail page</div></div><span class="badge badge-done">done</span></div>
+      <div class="task"><input type="checkbox" checked /><div class="task-body"><div class="task-title done">/watchlist — Sack page (auth gate)</div></div><span class="badge badge-done">done</span></div>
+      <div class="task"><input type="checkbox" checked /><div class="task-body"><div class="task-title done">/auth/login + /auth/signup — Auth forms</div></div><span class="badge badge-done">done</span></div>
+    </div>
+  </div>
+
+  <footer>Last updated: 2026-05-29 — Phases 1–5 nearly complete; deploy pending &nbsp;·&nbsp; moviesack.com</footer>
+
+</div>
+</body>
+</html>
