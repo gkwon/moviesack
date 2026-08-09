@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>moviesack — Status</title>
+<style>
+  :root { --bg:#fff; --fg:#1f2328; --muted:#656d76; --border:#d0d7de; --card:#f6f8fa; --teal:#0f766e; --warn:#9a6700; --bad:#b32424; }
+  * { box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; color:var(--fg); background:var(--bg); line-height:1.6; max-width:940px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
+  header { border-bottom:2px solid var(--border); padding-bottom:1.25rem; margin-bottom:1.5rem; }
+  h1 { font-size:1.9rem; margin:0 0 .35rem; }
+  .sub { color:var(--muted); font-size:.95rem; }
+  .pills { margin-top:.8rem; display:flex; flex-wrap:wrap; gap:.4rem; }
+  .pill { font-size:.74rem; font-weight:600; padding:.18rem .6rem; border-radius:999px; background:var(--card); border:1px solid var(--border); color:var(--muted); }
+  .lens { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:1rem 1.25rem; margin:1.5rem 0 2rem; font-size:.95rem; }
+  h2 { font-size:1.3rem; margin:2.5rem 0 1rem; padding-bottom:.35rem; border-bottom:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; margin:.5rem 0 1rem; font-size:.92rem; }
+  th,td { text-align:left; padding:.6rem .75rem; border-bottom:1px solid var(--border); vertical-align:top; }
+  th { background:var(--card); font-size:.82rem; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); }
+  code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.88rem; background:var(--card); padding:.05rem .35rem; border-radius:4px; }
+  ul { padding-left:1.25rem; } li { margin-bottom:.4rem; }
+  .gotcha { border-left:3px solid var(--warn); padding-left:1rem; margin:1rem 0; font-size:.92rem; }
+  footer { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--border); font-size:.82rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>moviesack — Status</h1>
+  <div class="sub">Movie watchlist and discovery, built on TMDB</div>
+  <div class="pills"><span class="pill">Next.js 16.3.0</span><span class="pill">React 19</span><span class="pill">Tailwind v4</span><span class="pill">Supabase</span><span class="pill">Vercel</span></div>
+</header>
+
+<div class="lens"><strong>State:</strong> MVP. Supabase auth + Postgres; <code>src/proxy.ts</code> uses a
+      broad matcher, so it is the project most exposed to middleware-layer regressions — worth a
+      smoke test after any Next upgrade. <br><strong>This session:</strong> Next security upgrade
+      only — no product changes.</div>
+
+<h2>Update — 2026-08-08 · dependency security</h2>
+<p>
+  <strong>Next.js upgraded to 16.3.0</strong> <code>35ba86c</code>. The 16.2.x line carried <strong>9 high-severity
+  advisories</strong>: Server Actions DoS, cache confusion of response bodies, SSRF via rewrites,
+  SSRF in Server Actions on custom servers, Image Optimization SVG DoS, unauthenticated disclosure of
+  internal Server Function endpoints, unbounded Server Action payload on Edge, and a middleware/proxy
+  bypass in App Router under Turbopack. <code>npm audit</code> now reports no Next advisories.
+</p>
+<p>Build verified green before commit.</p>
+<div class="gotcha">
+  <strong>Not yet live.</strong> The commit is pushed, but Vercel Git integration is not connected for
+  this project — Vercel cannot parse the <code>git@github-personal:…</code> SSH host alias used by
+  every repo here. The running site serves the pre-upgrade build until someone runs
+  <code>npx vercel deploy --prod</code> or connects the repo through the Vercel dashboard.
+</div>
+
+<h2>Known remaining advisories</h2>
+<p>
+  Unrelated transitive advisories remain in some projects (<code>brace-expansion</code>,
+  <code>body-parser</code>, <code>@hono/node-server</code>). These are dev-tooling dependencies
+  unrelated to the Next CVEs and were deliberately left alone: <code>npm audit fix</code> across
+  eight live projects in one unreviewed pass would churn lockfiles for little benefit. Worth a
+  separate, deliberate look.
+</p>
+
+<h2>Stack</h2>
+<table>
+  <thead><tr><th>Layer</th><th>Choice</th></tr></thead>
+  <tbody>
+    <tr><td>Next.js</td><td>Next.js 16.3.0</td></tr>
+    <tr><td>React</td><td>React 19</td></tr>
+    <tr><td>Tailwind</td><td>Tailwind v4</td></tr>
+    <tr><td>Supabase</td><td>Supabase</td></tr>
+    <tr><td>Vercel</td><td>Vercel</td></tr>
+  </tbody>
+</table>
+<p>Portfolio conventions (Gen A shape): Tailwind v4 CSS-first with no config file, <code>src/</code>
+layout, shadcn <code>base-nova</code>, GA4 via <code>components/analytics/GoogleAnalytics.tsx</code>
+(production-only), middleware named <code>proxy.ts</code> not <code>middleware.ts</code>.</p>
+
+<footer>Status doc · last updated 2026-08-08. Portfolio-wide notes live in
+<code>../../docs/</code>.</footer>
+</body>
+</html>
